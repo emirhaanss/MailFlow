@@ -1,0 +1,23 @@
+﻿@model MailFlow.Dtos.UserEditDto
+@{
+    Layout = null;
+}
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href=""
+<div class="container">
+    <br /><br />
+    <form method="post" enctype="multipart/form-data">
+        <input type="text" asp-for="Name" class="form-control" placeholder="Adınız" />
+        <br />
+        <input type="text" asp-for="Surname" class="form-control" placeholder="Soyadınız" />
+        <br />
+        <input type="text" asp-for="Email" class="form-control" placeholder="Mail Adresiniz" />
+        <br />
+        <input type="file" asp-for="Image" class="form-control" placeholder="Görsel Url" />
+        <br />
+        <input type="text" asp-for="Password" class="form-control" placeholder="Şifreniz" />
+        <br />
+        <button class="btn btn-info">Bilgileri Kaydet</button>
+    </form>
+</div>
+

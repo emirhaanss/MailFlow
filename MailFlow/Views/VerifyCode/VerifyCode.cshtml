@@ -1,0 +1,162 @@
+﻿@model MailFlow.Dtos.VerifyCodeDto
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>MailFlow | Doğrulama</title>
+
+    <link rel="stylesheet" href="~/template/assets/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #dfdbe5;
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .brand-logo {
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-circle {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            font-size: 32px;
+            color: #4f46e5;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px; /* Biraz daha dar yaptık */
+            padding: 35px 30px;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        .form-control-code {
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            color: #4f46e5;
+            transition: all 0.3s;
+        }
+
+            .form-control-code:focus {
+                background: #fff;
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+                outline: none;
+            }
+
+        .btn-verify {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            margin-top: 15px;
+        }
+
+            .btn-verify:hover {
+                background: #4338ca;
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+                transform: translateY(-1px);
+            }
+
+        .resend-link {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+            .resend-link:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="brand-logo">
+        <div class="logo-circle">
+            <i class='bx bxs-envelope'></i>
+        </div>
+        <h5 class="text-white mt-2 fw-bold" style="letter-spacing: 2px;">MAILFLOW</h5>
+    </div>
+
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <h5 class="fw-bold m-0">E-Posta Doğrulama</h5>
+            <p class="text-muted small mt-2">Kayıt işlemini tamamlamak için e-postanıza gönderilen <b>6 haneli</b> kodu aşağıya girin.</p>
+        </div>
+
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 text-center"></div>
+
+            <div class="mb-4">
+                <label class="form-label d-block text-center">Doğrulama Kodu</label>
+                @* Kod girişi için özel input *@
+                <input type="text"
+                       class="form-control form-control-code"
+                       asp-for="Code"
+                       maxlength="6"
+                       placeholder="000000"
+                       required
+                       autocomplete="off">
+                <span asp-validation-for="Code" class="text-danger small d-block text-center mt-2"></span>
+            </div>
+
+            <button type="submit" class="btn btn-verify w-100">KODU ONAYLA</button>
+        </form>
+
+        <div class="text-center mt-4 pt-2 border-top">
+            <p class="small text-muted mb-1">Kod gelmedi mi?</p>
+            <a href="#" class="resend-link">Yeni Kod Gönder</a>
+        </div>
+    </div>
+
+    <script src="~/template/assets/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

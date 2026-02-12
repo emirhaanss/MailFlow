@@ -1,0 +1,20 @@
+﻿@model MailFlow.Dtos.UserLoginDto
+@{
+    Layout = null;
+}
+
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<div class="container">
+    <form method="post">
+        <br /><br />
+        <label>Kullanıcı Adınız</label>
+        <input type="text" class="form-control" asp-for="Username" />
+        <br />
+        <label>Şifreniz</label>
+        <input type="text" class="form-control" asp-for="Password" />
+        <br />
+        <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+        <button class="btn-primary btn-success">Giriş Yap</button>
+
+    </form>
+</div>
