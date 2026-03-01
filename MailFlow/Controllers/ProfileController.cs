@@ -14,40 +14,77 @@ namespace MailFlow.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var values = await _userManager.FindByNameAsync(User.Identity.Name);
-            UserEditDto userEditDto = new UserEditDto();
-            userEditDto.Name = values.Name;
-            userEditDto.Surname = values.Surname;
-            userEditDto.Email = values.Email;
-            userEditDto.ImageUrl = values.ImageUrl;
-            return View(userEditDto);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Index(UserEditDto userEditDto)
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null) return RedirectToAction("Login", "Login");
+
+            UserEditDto userEditDto = new UserEditDto
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                ImageUrl = user.ImageUrl
+            };
+            return View(userEditDto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(UserEditDto userEditDto)
+        {
+            // 1. Kullanıcıyı bul
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            // 2. Şifre Doğrulama (Confirm Password Kontrolü)
+            if (userEditDto.Password != userEditDto.ConfirmPassword)
+            {
+                ModelState.AddModelError("", "Girdiğiniz şifreler birbiriyle uyuşmuyor!");
+                return View(userEditDto);
+            }
+
+            // 3. Temel Bilgileri Güncelle
             user.Name = userEditDto.Name;
             user.Surname = userEditDto.Surname;
             user.Email = userEditDto.Email;
-            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, userEditDto.Password);
 
-            var resource = Directory.GetCurrentDirectory();
-            var extension = Path.GetExtension(userEditDto.Image.FileName);
-            var imageName = Guid.NewGuid() + extension;
-            var saveLocation = resource + "/wwwroot/images/" + imageName;
-            var stream = new FileStream(saveLocation, FileMode.Create);
-            await userEditDto.Image.CopyToAsync(stream);
-            user.ImageUrl = imageName;
+            // 4. Şifre Güncelleme (Sadece şifre alanları doluysa)
+            if (!string.IsNullOrEmpty(userEditDto.Password))
+            {
+                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, userEditDto.Password);
+            }
 
+            // 5. Resim Yükleme İşlemi (Sadece yeni resim seçildiyse)
+            if (userEditDto.Image != null)
+            {
+                var resource = Directory.GetCurrentDirectory();
+                var extension = Path.GetExtension(userEditDto.Image.FileName);
+                var imageName = Guid.NewGuid() + extension;
+                var saveLocation = Path.Combine(resource, "wwwroot/images/", imageName);
 
+                // 'using' kullanımı dosyanın işlem bittikten sonra serbest bırakılmasını sağlar
+                using (var stream = new FileStream(saveLocation, FileMode.Create))
+                {
+                    await userEditDto.Image.CopyToAsync(stream);
+                }
+                user.ImageUrl = imageName;
+            }
+
+            // 6. Veritabanını Güncelle
             var result = await _userManager.UpdateAsync(user);
+
             if (result.Succeeded)
             {
                 return RedirectToAction("Inbox", "Message");
             }
-            return View();
+
+            // Identity hatalarını ModelState'e ekle (Örn: Email zaten alınmış vb.)
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View(userEditDto);
         }
     }
 }

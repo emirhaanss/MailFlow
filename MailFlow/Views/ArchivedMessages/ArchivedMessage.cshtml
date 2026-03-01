@@ -1,0 +1,77 @@
+﻿@model List<MailFlow.Entities.Message>
+@{
+    ViewData["Title"] = "ArchivedMessage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-5xl mx-auto mt-8">
+
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold text-slate-800">🗄️ Arşivlenmiş Mesajlar</h2>
+        <span class="text-sm text-slate-500">@Model.Count mesaj</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">
+            Henüz arşivlenmiş mesaj bulunmuyor.
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+
+            @foreach (var msg in Model)
+            {
+                <div onclick="window.location='@Url.Action("MessageDetail", "Inbox", new { id = msg.MessageId })'"
+                     class="flex items-center justify-between px-6 py-4 border-b hover:bg-slate-50 cursor-pointer transition group">
+
+                    <!-- SOL TARAF: Mesaj bilgileri -->
+                    <div>
+                        <p class="font-semibold text-slate-800 group-hover:text-primary transition">
+                            @msg.Subject
+                        </p>
+                        <p class="text-sm text-slate-500">Gönderen: @msg.SenderEmail</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            @msg.SendDate.ToString("dd.MM.yyyy HH:mm")
+                        </p>
+                    </div>
+
+                    <!-- SAĞ TARAF: İşlem butonları -->
+                    <div class="flex items-center gap-2">
+                        <!-- ⭐ Yıldız -->
+                        <a asp-action="ToggleStar" asp-route-id="@msg.MessageId"
+                           style="text-decoration:none;" onclick="event.stopPropagation();">
+                            @if (msg.IsStarred)
+                            {
+                                <span style="color:gold; font-size:18px;">★</span>
+                            }
+                            else
+                            {
+                                <span style="color:gray; font-size:18px;">☆</span>
+                            }
+                        </a>
+
+                        <!-- 📦 Arşivden Çıkar -->
+                        <a asp-action="Unarchive"
+                           asp-route-id="@msg.MessageId"
+                           class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 text-blue-500 transition"
+                           onclick="event.stopPropagation();">
+                            <span class="material-symbols-outlined text-lg">unarchive</span>
+                        </a>
+                        <!-- 🗑 Çöp Kutusuna Taşı -->
+                        <a asp-action="DeleteMessage"
+                           asp-route-id="@msg.MessageId"
+                           class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 text-red-500 transition"
+                           onclick="event.stopPropagation(); return confirm('Bu mesajı silmek istediğinize emin misiniz?');">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                        </a>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+</div>
+

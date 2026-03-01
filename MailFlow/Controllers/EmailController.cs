@@ -48,7 +48,7 @@ namespace MailFlow.Controllers
             smtpClient.Send(mimeMessage);
             smtpClient.Disconnect(true);
 
-            return RedirectToAction("UserList");
+            return RedirectToAction("Inbox","Inbox");
         }
     }
 }

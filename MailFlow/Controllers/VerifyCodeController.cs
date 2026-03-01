@@ -49,7 +49,7 @@ namespace MailFlow.Controllers
             {
                 //Session temizle
                 HttpContext.Session.Clear();
-                return RedirectToAction("Login", "Login");
+                return RedirectToAction("Login", "UserLogin");
             }
             else
             {

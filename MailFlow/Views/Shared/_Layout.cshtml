@@ -1,49 +1,245 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Identity
+@using MailFlow.Entities
+@using MailFlow.Context
+@inject UserManager<AppUser> UserManager
+@inject MailContext _context
+@{
+    Layout = null;
+    string currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    string currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+
+    // Giriş yapan kullanıcının veritabanı bilgilerini çekiyoruz
+    var user = await UserManager.FindByNameAsync(User.Identity.Name);
+    var userImageUrl = user?.ImageUrl ?? "user.png";
+
+    // Son 3 maili çekiyoruz
+    var lastThreeMessages = _context.Messages.Where(x => x.ReceiverEmail == user.Email)
+        .OrderByDescending(x => x.SendDate)
+        .Take(3)
+        .ToList();
+}
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MailFlow</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/MailFlow.styles.css" asp-append-version="true" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>MailFlow - Professional Email Management</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d7ff2",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .bx {
+            vertical-align: middle;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MailFlow</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 h-screen overflow-hidden">
+    <div class="flex h-full">
+        <aside class="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
+
+            <div class="p-6 flex items-center gap-3">
+                <div class="size-11 bg-white rounded-full flex items-center justify-center shadow-md border border-slate-100 dark:border-slate-800">
+                    <i class='bx bxs-envelope text-primary text-2xl'></i>
+                </div>
+
+                <div>
+                    <h1 class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">MailFlow</h1>
+                    <p class="text-[10px] text-slate-500 font-bold tracking-widest -mt-1 uppercase">Management</p>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+
+            <nav class="flex-1 px-4 mt-2 space-y-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "Dashboard" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="Dashboard" asp-action="DashboardPage">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-sm">Dashboard</span>
+                </a>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "Inbox" && currentAction == "Inbox" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="Inbox" asp-action="Inbox">
+                    <span class="material-symbols-outlined">inbox</span>
+                    <span class="text-sm">Gelen Kutusu</span>
+                </a>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "Unread" && currentAction == "UnreadMessages" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="Unread" asp-action="UnreadMessages">
+                    <span class="material-symbols-outlined">mark_email_unread</span>
+                    <span class="text-sm">Okunmamış Mailler</span>
+                </a>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "StarredMessages" && currentAction == "StarredMessage" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="StarredMessages" asp-action="StarredMessage">
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="text-sm">Favoriler</span>
+                </a>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "SentMessage" && currentAction == "SentMessages" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="SentMessage" asp-action="SentMessages">
+                    <span class="material-symbols-outlined">send</span>
+                    <span class="text-sm">Gönderilen Mailler</span>
+                </a>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "ArchivedMessages" && currentAction == "ArchivedMessage" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="ArchivedMessages" asp-action="ArchivedMessage">
+                    <span class="material-symbols-outlined">archive</span>
+                    <span class="text-sm">Arşivlenmiş Mailler</span>
+                </a>
+
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg @(currentController == "TrashMessages" && currentAction == "TrashMessage" ? "bg-primary/10 text-primary font-semibold" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors")"
+                   asp-controller="TrashMessages" asp-action="TrashMessage">
+                    <span class="material-symbols-outlined">delete</span>
+                    <span class="text-sm">Çöp Kutusu</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800">
+                <form asp-controller="Login" asp-action="Logout" method="post" onsubmit="return confirmLogout()">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            class="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+                        <span class="material-symbols-outlined">logout</span>
+                        <span class="text-sm font-semibold">Çıkış Yap</span>
+                    </button>
+                </form>
+            </div>
+
+            <script>
+                function confirmLogout() {
+                    return confirm("Çıkış yapmak istediğinize emin misiniz?");
+                }
+            </script>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark overflow-hidden">
+            <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-8 shrink-0">
+                <div class="relative w-96">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                    <input class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary focus:bg-white dark:focus:bg-slate-700 transition-all" placeholder="E-posta veya kişi ara..." type="text" />
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative inline-block text-left" id="notificationArea">
+                        <button onclick="toggleNotifications()" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg relative transition-colors focus:outline-none">
+                            <span class="material-symbols-outlined">notifications</span>
+
+                            @if (lastThreeMessages != null && lastThreeMessages.Any())
+                            {
+                                <span class="absolute top-2 right-2.5 size-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
+                            }
+                        </button>
+
+                        <div id="notificationMenu" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden origin-top-right transition-all">
+                            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                                <span class="font-bold text-sm">Son Mesajlar</span>
+                                <span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">@lastThreeMessages?.Count() Yeni</span>
+                            </div>
+
+                            <div class="max-h-80 overflow-y-auto">
+                                @if (lastThreeMessages != null && lastThreeMessages.Any())
+                                {
+                                    @foreach (var item in lastThreeMessages)
+                                    {
+                                        <a href="/Inbox/MessageDetails/@item.MessageId" class="block p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-b border-slate-50 dark:border-slate-800 last:border-0">
+                                            <div class="flex gap-3">
+                                                <div class="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                                                    <i class='bx bxs-user-circle text-lg'></i>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@item.SenderEmail</p>
+                                                    <p class="text-[11px] text-slate-500 truncate mt-0.5">@item.Subject</p>
+                                                    <p class="text-[9px] text-slate-400 mt-1">@item.SendDate.ToString("dd MMM, HH:mm")</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="p-8 text-center">
+                                        <p class="text-xs text-slate-400">Yeni bildirim yok</p>
+                                    </div>
+                                }
+                            </div>
+
+                            <a asp-controller="Inbox" asp-action="Inbox" class="block p-3 text-center text-xs font-bold text-primary hover:bg-primary/5 transition-colors border-t border-slate-100 dark:border-slate-800 uppercase tracking-wider">
+                                Tümünü Gör
+                            </a>
+                        </div>
+                    </div>
+
+                    <a asp-controller="Profile" asp-action="EditProfile" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined">settings</span>
+                    </a>
+
+                    <div class="h-8 w-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
+
+                    <div class="flex items-center gap-3 pl-2">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">@user?.Name @user?.Surname</p>
+                            <p class="text-[10px] text-slate-500 font-medium">@user?.Email</p>
+                        </div>
+                        <img alt="User profile avatar"
+                             class="size-10 rounded-full border-2 border-primary/20 p-0.5 object-cover"
+                             src="/images/@userImageUrl"
+                             onerror="this.src='https://ui-avatars.com/api/?name=@user?.Name+@user?.Surname&background=0d7ff2&color=fff'" />
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-auto p-8">
+                @RenderBody()
+            </div>
         </main>
     </div>
+    <script>
+        function toggleNotifications() {
+            const menu = document.getElementById('notificationMenu');
+            menu.classList.toggle('hidden');
+        }
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - MailFlow - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+        // Menü açıkken dışarı tıklandığında kapanması için:
+        window.addEventListener('click', function(e) {
+            const area = document.getElementById('notificationArea');
+            const menu = document.getElementById('notificationMenu');
+            if (!area.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

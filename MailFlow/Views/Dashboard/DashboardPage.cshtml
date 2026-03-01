@@ -1,0 +1,99 @@
+﻿@model MailFlow.Dtos.DashboardDto
+@{
+    ViewData["Title"] = "DashboardPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-6 space-y-8">
+
+    <!-- Başlık -->
+    <div>
+        <h1 class="text-2xl font-bold text-slate-700 dark:text-white">
+            Dashboard
+        </h1>
+        <p class="text-slate-500 text-sm">
+            Mail istatistiklerin ve profil bilgilerin burada görüntüleniyor.
+        </p>
+    </div>
+
+    <!-- PROFİL KARTI -->
+    <div class="bg-white dark:bg-slate-900 shadow-lg rounded-2xl p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+
+        <!-- Profil Resmi -->
+        <div>
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default-user.png" : "/images/" + Model.ImageUrl)"
+                 class="w-28 h-28 rounded-full object-cover border-4 border-indigo-500/20 shadow-md"
+                 alt="Profil Resmi" />
+        </div>
+
+        <!-- Profil Bilgileri -->
+        <div class="text-center md:text-left space-y-2 flex-1">
+            <h2 class="text-xl font-bold text-slate-700 dark:text-white">
+                @Model.FullName
+            </h2>
+
+            <p class="text-slate-500 text-sm">
+                @Model.Email
+            </p>
+
+            <span class="inline-block mt-2 px-4 py-1 text-xs rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300">
+                Aktif Kullanıcı
+            </span>
+
+            <!-- Profili Düzenle Butonu -->
+            <div class="mt-4">
+                <a asp-controller="Profile" asp-action="EditProfile"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                    Profili Düzenle
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <a asp-controller="Inbox" asp-action="Inbox" class="bg-white dark:bg-slate-900 shadow-lg rounded-2xl p-6 hover:shadow-xl transition hover:scale-[1.02] duration-300 block">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-slate-500">Toplam Mesaj</p>
+                    <h2 class="text-3xl font-bold text-indigo-600 mt-2">@Model.TotalMessages</h2>
+                </div>
+                <span class="material-symbols-outlined text-4xl text-indigo-500">mail</span>
+            </div>
+        </a>
+
+        <a asp-controller="Unread" asp-action="UnreadMessages" class="bg-white dark:bg-slate-900 shadow-lg rounded-2xl p-6 hover:shadow-xl transition hover:scale-[1.02] duration-300 block">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-slate-500">Okunmamış</p>
+                    <h2 class="text-3xl font-bold text-red-500 mt-2">@Model.UnreadMessages</h2>
+                </div>
+                <span class="material-symbols-outlined text-4xl text-red-400">mark_email_unread</span>
+            </div>
+        </a>
+
+        <a asp-controller="StarredMessages" asp-action="StarredMessage" class="bg-white dark:bg-slate-900 shadow-lg rounded-2xl p-6 hover:shadow-xl transition hover:scale-[1.02] duration-300 block">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-slate-500">Yıldızlı</p>
+                    <h2 class="text-3xl font-bold text-yellow-500 mt-2">@Model.StarredMessages</h2>
+                </div>
+                <span class="material-symbols-outlined text-4xl text-yellow-400">star</span>
+            </div>
+        </a>
+
+        <a asp-controller="ArchivedMessages" asp-action="ArchivedMessage" class="bg-white dark:bg-slate-900 shadow-lg rounded-2xl p-6 hover:shadow-xl transition hover:scale-[1.02] duration-300 block">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="text-sm text-slate-500">Arşivlenen</p>
+                    <h2 class="text-3xl font-bold text-green-500 mt-2">@Model.ArchivedMessages</h2>
+                </div>
+                <span class="material-symbols-outlined text-4xl text-green-400">inventory_2</span>
+            </div>
+        </a>
+
+    </div>
+
+</div>

@@ -1,6 +1,6 @@
-﻿namespace MailFlow.Entities
+﻿namespace MailFlow.Dtos
 {
-    public class Message
+    public class InboxDto
     {
         public int MessageId { get; set; }
         public string SenderEmail { get; set; }
@@ -12,7 +12,5 @@
         public bool IsStarred { get; set; }
         public bool IsArchived { get; set; }
         public bool IsDeleted { get; set; }
-        public string AppUserId { get; set; }
-        public AppUser AppUser { get; set; }
     }
 }

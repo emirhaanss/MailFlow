@@ -1,0 +1,41 @@
+﻿@model MailFlow.Entities.Message
+
+@{
+    ViewData["Title"] = "MessageDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-3xl mx-auto mt-10 bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8">
+
+    <!-- Başlık -->
+    <h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">@Model.Subject</h1>
+
+    <!-- Kimden ve Tarih -->
+    <div class="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <span>📧 Gönderen: <strong>@Model.SenderEmail</strong></span>
+        <span>📅 Tarih: @Model.SendDate.ToString("dd.MM.yyyy HH:mm")</span>
+    </div>
+
+    <!-- Mesaj Detayı -->
+    <div class="text-slate-700 dark:text-slate-200 whitespace-pre-wrap text-base leading-relaxed mb-8">
+        @Model.MessageDetail
+    </div>
+
+    <!-- Butonlar -->
+    <div class="flex gap-3">
+        <!-- Geri Dön -->
+        <a asp-action="Inbox" class="inline-block px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg shadow transition">
+            ← Gelen Kutusuna Dön
+        </a>
+
+        <!-- Çöp Kutusuna Taşı -->
+        <form asp-action="MoveToTrash" method="post" class="inline">
+            <input type="hidden" name="id" value="@Model.MessageId" />
+            <button type="submit"
+                    class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition">
+                🗑 Çöp Kutusuna Taşı
+            </button>
+        </form>
+    </div>
+
+</div>

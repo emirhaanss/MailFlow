@@ -20,7 +20,7 @@ namespace MailFlow.Services
         {// MimeMessage → Mailin tamamını temsil eder (kimden, kime, konu, içerik vs.)
             MimeMessage mimeMessage = new MimeMessage();
 
-            mimeMessage.From.Add(new MailboxAddress("MailFlow", _emailSettings.Email);
+            mimeMessage.From.Add(new MailboxAddress("MailFlow", _emailSettings.Email));
             // Maili gönderen kişi bilgisi (gözüken isim + gerçek mail)
 
             mimeMessage.To.Add(new MailboxAddress("", receiverEmail));

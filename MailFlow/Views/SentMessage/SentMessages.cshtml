@@ -1,0 +1,57 @@
+﻿@model List<MailFlow.Entities.Message>
+
+@{
+    ViewData["Title"] = "SentMessages";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="max-w-5xl mx-auto mt-8">
+
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold text-slate-800">📤 Gönderilen Mesajlar</h2>
+        <span class="text-sm text-slate-500">@Model.Count mesaj</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">
+            Henüz gönderilmiş mesaj bulunmuyor.
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+
+            @foreach (var msg in Model)
+            {
+                <div onclick="window.location='@Url.Action("MessageDetail", "SentMessage", new { id = msg.MessageId })'"
+                     class="flex items-center justify-between px-6 py-4 border-b hover:bg-slate-50 cursor-pointer transition group">
+
+                    <!-- SOL TARAF -->
+                    <div>
+                        <p class="font-semibold text-slate-800 group-hover:text-primary transition">
+                            @msg.Subject
+                        </p>
+                        <p class="text-sm text-slate-500">
+                            Alıcı: @msg.ReceiverEmail
+                        </p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            @msg.SendDate.ToString("dd.MM.yyyy HH:mm")
+                        </p>
+                    </div>
+
+                    <!-- SAĞ TARAF -->
+                    <div>
+                        <a href="@Url.Action("DeleteMessage", "SentMessage", new { id = msg.MessageId })"
+                           onclick="event.stopPropagation(); return confirm('Bu mesajı silmek istediğinize emin misiniz?');"
+                           class="px-3 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition">
+                            Sil
+                        </a>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+</div>

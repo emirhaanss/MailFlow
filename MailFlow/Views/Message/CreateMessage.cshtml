@@ -1,22 +1,83 @@
-﻿@model MailFlow.Entities.Message
-@{
-    Layout = null;
+﻿@{
+    ViewData["Title"] = "CreateMessage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-<form method="post">
-    <div class="container">
-        <br /><br />
-        <label>Alıcı Mail</label>
-        <input type="text" asp-for="ReceiverEmail" class="form-control" />
-        <br />
-        <label>Konu</label>
-        <input type="text" asp-for="Subject" class="form-control" />
-        <br />
-        <label>Mesaj</label>
-        <input type="text" asp-for="MessageDetail" class="form-control" />
-        <br />
-        <button class="btn btn-primary">Mesajı Gönder</button>
+
+@model MailFlow.Dtos.MailRequestDto
+
+<div class="max-w-3xl mx-auto mt-10">
+
+    <div class="bg-white shadow-lg rounded-2xl border border-slate-200 overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="px-8 py-6 border-b bg-slate-50">
+            <h2 class="text-2xl font-bold text-slate-800">✉️ Yeni Mesaj Oluştur</h2>
+            <p class="text-sm text-slate-500 mt-1">Mesajınızı oluşturup gönderebilirsiniz.</p>
+        </div>
+
+        <!-- FORM -->
+        <div class="px-8 py-6">
+
+            <form asp-action="CreateMessage" method="post">
+
+                <!-- Alıcı -->
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Alıcı E-posta
+                    </label>
+                    <input asp-for="ReceiverEmail"
+                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                           placeholder="ornek@mail.com" />
+                    <span asp-validation-for="ReceiverEmail" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Konu -->
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Konu
+                    </label>
+                    <input asp-for="Subject"
+                           class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                           placeholder="Mesaj konusu..." />
+                    <span asp-validation-for="Subject" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- Mesaj -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">
+                        Mesaj
+                    </label>
+                    <textarea asp-for="MessageDetail"
+                              rows="6"
+                              class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition resize-none"
+                              placeholder="Mesajınızı buraya yazın..."></textarea>
+                    <span asp-validation-for="MessageDetail" class="text-red-500 text-sm"></span>
+                </div>
+
+                <!-- BUTONLAR -->
+                <div class="flex justify-end gap-3">
+
+                    <a asp-action="Inbox"
+                       class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-semibold hover:bg-slate-100 transition">
+                        İptal
+                    </a>
+
+                    <button type="submit"
+                            class="px-6 py-2.5 rounded-xl bg-primary text-white font-semibold shadow-md hover:bg-primary/90 transition">
+                        Gönder
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
-</form>
+
+</div>
+
+
+
 

@@ -1,0 +1,69 @@
+﻿@model MailFlow.Dtos.UserEditDto
+@{
+    ViewData["Title"] = "EditProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="p-6 max-w-xl mx-auto space-y-4">
+
+    <h2 class="text-2xl font-bold mb-4 text-slate-700 dark:text-white">
+        Profili Düzenle
+    </h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-100 text-green-700 p-2 rounded">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <form asp-action="EditProfile" asp-controller="Profile" method="post" enctype="multipart/form-data" class="space-y-4">
+
+        <div class="flex items-center gap-4">
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default-user.png" : "/images/" + Model.ImageUrl)"
+                 class="w-24 h-24 rounded-full object-cover border-2 border-indigo-500 shadow-md"
+                 alt="Profil Resmi" />
+            <label class="cursor-pointer bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 transition text-sm">
+                Resim Seç
+                <input asp-for="Image" type="file" class="hidden" />
+            </label>
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Ad</label>
+            <input asp-for="Name" class="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white" />
+            <span asp-validation-for="Name" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Soyad</label>
+            <input asp-for="Surname" class="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white" />
+            <span asp-validation-for="Surname" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Email</label>
+            <input asp-for="Email" class="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white" />
+            <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Yeni Şifre</label>
+            <input asp-for="Password" type="password" class="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white" />
+            <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div>
+            <label class="block text-sm mb-1">Şifreyi Onayla</label>
+            <input asp-for="ConfirmPassword" type="password" class="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:text-white" />
+            <span asp-validation-for="ConfirmPassword" class="text-red-500 text-sm"></span>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+            Kaydet
+        </button>
+    </form>
+</div>
+
+

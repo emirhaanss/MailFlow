@@ -1,0 +1,129 @@
+﻿@model List<MailFlow.Entities.Message>
+
+@{
+    ViewData["Title"] = "Inbox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex-1 overflow-auto p-8">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-3xl font-black'A' text-slate-900 dark:text-slate-100 tracking-tight">Gelen Kutusu</h2>
+            <p class="text-slate-500 text-sm mt-1">Tüm gelen e-postalarınız burada listelenir.</p>
+        </div>
+        <a asp-controller="Message" asp-action="CreateMessage"
+           class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-primary/25 flex items-center gap-2 transition-all">
+            <span class="material-symbols-outlined !text-xl">edit</span>
+            Yeni E-posta Oluştur
+        </a>
+    </div>
+
+    <!-- Email List Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Gönderen</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Konu</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tarih</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Durum</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+
+                @foreach (var message in Model)
+                {
+                    <tr class="hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors group cursor-pointer"
+                        onclick="window.location='@Url.Action("MessageDetail", "Inbox", new { id = message.MessageId })'">
+
+                        <td class="px-6 py-5 whitespace-nowrap">
+                            <div class="flex items-center gap-3">
+                                <div class="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary font-bold text-xs">
+                                    @message.SenderEmail.Substring(0, 1)
+                                </div>
+                                <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                    @message.SenderEmail
+                                </span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-5">
+                            <p class="text-sm font-bold text-slate-900 dark:text-slate-100">
+                                @message.Subject
+                            </p>
+                            <p class="text-xs text-slate-500 truncate max-w-md">
+                                @message.MessageDetail
+                            </p>
+                        </td>
+
+                        <td class="px-6 py-5 whitespace-nowrap">
+                            <span class="text-sm text-slate-500 font-medium">
+                                @message.SendDate.ToString("dd.MM.yyyy")
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-5 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold
+                                    @(message.IsStatus ? "bg-primary/10 text-primary border border-primary/20"
+                                                                                     : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300")">
+                            @(message.IsStatus ? "Okundu" : "Okunmadı")
+                        </span>
+                    </td>
+
+                        <!-- İşlem Butonları -->
+                        <td class="px-6 py-5 whitespace-nowrap text-right">
+                            <div class="flex items-center justify-end gap-2">
+
+                                <!-- ⭐ Yıldız -->
+                                <a asp-action="ToggleStar" asp-route-id="@message.MessageId"
+                                   style="text-decoration:none;" onclick="event.stopPropagation();">
+                                @if (message.IsStarred)
+                                    {
+                                        <span style="color:gold; font-size:18px;">★</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:gray; font-size:18px;">☆</span>
+                                    }
+                                </a>
+
+                                <!-- 📦 Arşiv -->
+                                <a asp-action="ArchivedMessage"
+                                   asp-route-id="@message.MessageId"
+                                   class="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 text-blue-500 transition"
+                                   onclick="event.stopPropagation();">
+                                    <span class="material-symbols-outlined text-lg">archive</span>
+                                </a>
+
+                                <!-- 🗑 Sil -->
+                                <a asp-action="Delete"
+                                   asp-route-id="@message.MessageId"
+                                   class="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 text-red-500 transition"
+                                   onclick="event.stopPropagation(); return confirm('Bu mesajı silmek istediğinize emin misiniz?');">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                </a>
+
+                            </div>
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+        <!-- Pagination / Footer -->
+        <div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <span class="text-xs text-slate-500 font-medium">Toplam @Model.Count mesaj listeleniyor</span>
+            <div class="flex gap-2">
+                <button class="p-1.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined !text-sm leading-none">chevron_left</span>
+                </button>
+                <button class="p-1.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined !text-sm leading-none">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

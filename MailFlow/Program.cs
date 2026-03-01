@@ -18,13 +18,19 @@ builder.Services.AddDbContext<MailContext>(options =>
 
 builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<MailContext>().AddErrorDescriber<CustomIdentityValidator>();
 //Üyelik sistemini aktif eder (login,register,şifre hashleme,rol sistemi vb),benim appuser sınıfımı kullan. Kullanıcıları ramde tutma benim mailcontext veritabanımda tut. Benim yazdığım CustomIdentityValidator sınıfını kullan ve hataları Türkçe ver.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter());
+});
 builder.Services.AddSession(); //Session ekledik (Kullanıcı tarayıcadayken verilerini geçici saklayan bellek)
 builder.Services.AddScoped<EmailService>(); //“Projede EmailService diye bir servis var. Bunu ihtiyaç duyan Controller’lara otomatik ver.”
                                             //AddScoped → Her sayfa isteği için 1 tane servis oluştur.
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings")); //Appsettings.json dosyasındaki EmailSettings bölümünü EmailSettings sınıfına bağla. Yani appsettings.json dosyasındaki EmailSettings bölümündeki bilgileri EmailSettings sınıfının özelliklerine atarız.
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Login/UserLogin";
+});
 
 var app = builder.Build();
 app.UseStaticFiles();
@@ -47,6 +53,6 @@ app.UseAuthorization();  //Yetkilendirme işlemleri
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=UserLogin}/{id?}");
 
 app.Run();
